@@ -1,0 +1,11 @@
+{
+  "name": "labor-tracker",
+  "version": "1.0.0",
+  "description": "Repair Order Tracking Tool",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason Summers",
+  "license": "MIT"
+}
