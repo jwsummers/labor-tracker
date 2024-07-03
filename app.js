@@ -1,85 +1,65 @@
-const trackWork = document.querySelector(".form-btn");
-const clearBtn = document.querySelector(".clear-jobs");
-
-loadEventListeners();
-
-function loadEventListeners() {
-  document.addEventListener("DOMContentLoaded", getJobs);
-
-  trackWork.addEventListener("click", addCar);
-
-  clearBtn.addEventListener("click", clearJobs);
-}
-
-function addCar(e) {
-  const car = {
-    year: document.getElementById("year").value,
-    make: document.getElementById("make").value,
-    model: document.getElementById("model").value,
-    ro: document.getElementById("roNumber").value,
-    labor: document.getElementById("labor").value,
-  };
-
-  saveJob(car);
-  showCar(car);
-
-  e.preventDefault();
-
-}
-
-function saveJob(car) {
-  let jobs = JSON.parse(localStorage["jobList"] || "[]");
-  jobs.push(car);
-
-  localStorage.setItem("jobList", JSON.stringify(jobs));
-}
-
-function showCar(car) {
-  const div = document.createElement("div");
-  const heading = document.createElement("h3");
-  const vehicle = document.createElement("p");
-  const hours = document.createElement("h3");
-
-  div.setAttribute("class", "card");
-  heading.setAttribute("class", "card-heading");
-  vehicle.setAttribute("class", "card-info");
-  hours.setAttribute("class", "card-heading");
-
-  document.getElementById("gridContainer").appendChild(div);
-  div.appendChild(heading);
-  div.appendChild(vehicle);
-  div.appendChild(hours);
-
-  heading.innerHTML = "RO #: " + car.ro;
-  vehicle.innerHTML = car.year + " " + car.make + " " + car.model;
-  hours.innerHTML = car.labor + "hours";
-
-  document.getElementById("year").value = "";
-  document.getElementById("make").value = "";
-  document.getElementById("model").value = "";
-  document.getElementById("roNumber").value = "";
-  document.getElementById("labor").value = "";
-}
-
-function getJobs() {
-  let jobs = JSON.parse(localStorage.getItem("jobList") || "[]");
-  jobs.forEach(showCar);
-}
-
-
-
-function clearJobs() {
-  if (confirm("Are You Sure You Wish To Clear All Repair Orders?")) {
-  }
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('roForm');
+    const gridContainer = document.getElementById('gridContainer');
+    const totalElement = document.getElementById('total');
+    const clearJobsButton = document.getElementById('clearJobs');
+    let totalHours = 0;
   
-  const cards = document.getElementById('gridContainer');
-  while (cards.firstChild) {
-    cards.removeChild(cards.firstChild)
-  }
-
-  clearTasksFromLocalStorage();
-}
-
-function clearTasksFromLocalStorage() {
-  localStorage.clear();
-}
+    // Load stored data from local storage
+    const loadStoredData = () => {
+      const storedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
+      totalHours = storedJobs.reduce((sum, job) => sum + parseFloat(job.labor), 0);
+      totalElement.textContent = totalHours.toFixed(2);
+      storedJobs.forEach(job => createCard(job));
+    };
+  
+    // Save data to local storage
+    const saveToLocalStorage = (job) => {
+      const jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+      jobs.push(job);
+      localStorage.setItem('jobs', JSON.stringify(jobs));
+    };
+  
+    // Create card element
+    const createCard = (job) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-heading">Repair Order #${job.roNumber}</div>
+        <div class="card-info">Year: ${job.year}</div>
+        <div class="card-info">Make: ${job.make}</div>
+        <div class="card-info">Model: ${job.model}</div>
+        <div class="card-info">Labor Hours: ${job.labor}</div>
+      `;
+      gridContainer.appendChild(card);
+    };
+  
+    // Form submission handler
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const job = {
+        year: document.getElementById('year').value,
+        make: document.getElementById('make').value,
+        model: document.getElementById('model').value,
+        roNumber: document.getElementById('roNumber').value,
+        labor: parseFloat(document.getElementById('labor').value),
+      };
+      totalHours += job.labor;
+      totalElement.textContent = totalHours.toFixed(2);
+      createCard(job);
+      saveToLocalStorage(job);
+      form.reset();
+    });
+  
+    // Clear jobs handler
+    clearJobsButton.addEventListener('click', () => {
+      localStorage.removeItem('jobs');
+      gridContainer.innerHTML = '';
+      totalHours = 0;
+      totalElement.textContent = '0.00';
+    });
+  
+    // Load stored data on page load
+    loadStoredData();
+  });
+  
