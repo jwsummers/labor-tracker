@@ -1,63 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Labor Tracker</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="container">
-      <h1 class="main-heading">Repair Order Tracker</h1>
-      <p class="description">
-        a <span>Simple</span> tool to track your work and hours.
-      </p>
-      <div class="form-container">
-        <form action="#" class="ro-form">
-          <div class="vehicle">
-            <label for="year">Vehicle Year: </label>
-            <input
-              type="number"
-              min="1900"
-              max="2100"
-              id="year"
-              placeholder="YYYY"
-              required
-            />
-            <label for="make">Vehicle Make: </label>
-            <input type="text" id="make" required />
-            <label for="model">Vehicle Model: </label>
-            <input type="text" id="model" required />
-          </div>
-          <div class="labor">
-            <label for="repair-order">Repair Order #: </label>
-            <input type="number" id="roNumber" required />
-            <label for="labor">Total Labor Hours: </label>
-            <input
-              type="number"
-              id="labor"
-              placeholder="1.0"
-              step="0.01"
-              required
-            />
-            <a href="" class="add-labor">Need help adding labor?</a>
-          </div>
-          <div class="form-submit">
-            <input class="form-btn" value="Track Work" type="submit" />
-          </div>
-        </form>
-      </div>
-    </div>
-    <div class="line"></div>
-    <div class="total-hours" id="result">
-      <p class="total-label">
-        Total Tracked Hours: <span class="total" id="total"></span>
-      </p>
-    </div>
-    <div class="grid-container" id="gridContainer"></div>
-    <button class="clear-jobs">Clear Repair Orders</button>
-
-    <script src="app.js"></script>
-  </body>
-</html>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('roForm');
+    const gridContainer = document.getElementById('gridContainer');
+    const totalElement = document.getElementById('total');
+    const clearJobsButton = document.getElementById('clearJobs');
+    let totalHours = 0;
+  
+    // Load stored data from local storage
+    const loadStoredData = () => {
+      const storedJobs = JSON.parse(localStorage.getItem('jobs')) || [];
+      totalHours = storedJobs.reduce((sum, job) => sum + parseFloat(job.labor), 0);
+      totalElement.textContent = totalHours.toFixed(2);
+      storedJobs.forEach(job => createCard(job));
+    };
+  
+    // Save data to local storage
+    const saveToLocalStorage = (job) => {
+      const jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+      jobs.push(job);
+      localStorage.setItem('jobs', JSON.stringify(jobs));
+    };
+  
+    // Create card element
+    const createCard = (job) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-heading">Repair Order #${job.roNumber}</div>
+        <div class="card-info">Year: ${job.year}</div>
+        <div class="card-info">Make: ${job.make}</div>
+        <div class="card-info">Model: ${job.model}</div>
+        <div class="card-info">Labor Hours: ${job.labor}</div>
+      `;
+      gridContainer.appendChild(card);
+    };
+  
+    // Form submission handler
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const job = {
+        year: document.getElementById('year').value,
+        make: document.getElementById('make').value,
+        model: document.getElementById('model').value,
+        roNumber: document.getElementById('roNumber').value,
+        labor: parseFloat(document.getElementById('labor').value),
+      };
+      totalHours += job.labor;
+      totalElement.textContent = totalHours.toFixed(2);
+      createCard(job);
+      saveToLocalStorage(job);
+      form.reset();
+    });
+  
+    // Clear jobs handler
+    clearJobsButton.addEventListener('click', () => {
+      localStorage.removeItem('jobs');
+      gridContainer.innerHTML = '';
+      totalHours = 0;
+      totalElement.textContent = '0.00';
+    });
+  
+    // Load stored data on page load
+    loadStoredData();
+  });
+  
