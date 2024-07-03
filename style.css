@@ -16,7 +16,6 @@ body {
   margin: 0 4rem 3rem 4rem;
   padding: 2rem;
   background-color: #668a99;
-  height: 100vh;
   color: #ddd;
   box-shadow: 3px 3px 5px 6px #0000003b;
   border-radius: 5px;
@@ -59,11 +58,7 @@ body {
   margin: 3rem;
 }
 
-.vehicle {
-  display: flex;
-  flex-direction: column;
-}
-
+.vehicle,
 .labor {
   display: flex;
   flex-direction: column;
