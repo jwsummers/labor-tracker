@@ -46,14 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let laborTotal = 0; // Temporary storage for labor calculation
 
-  // Open modal when add-labor link is clicked
-  addLaborLink.addEventListener('click', (event) => {
-    event.preventDefault(); // Prevent default link behavior
-    laborModal.classList.remove('hidden'); // Show modal
-    laborInput.value = ''; // Reset input
-    laborTotal = parseFloat(laborField.value) || 0; // Set current labor total
-    currentLaborTotal.textContent = `Total: ${laborTotal.toFixed(2)}`;
-  });
+ // Open modal when add-labor link is clicked
+addLaborLink.addEventListener('click', (event) => {
+  event.preventDefault();
+  console.log("Add Labor link clicked");
+  laborModal.classList.remove('hidden');
+  laborModal.style.display = 'block';
+  laborModal.style.zIndex = '1000';
+  console.log('Modal styles applied:', laborModal.style);
+
+  // Synchronize laborTotal with the current value in laborField
+  laborTotal = parseFloat(laborField.value) || 0;
+  console.log('Initialized laborTotal:', laborTotal); // Debugging log
+});
 
   // Close modal function
   const closeModal = () => {
@@ -68,8 +73,19 @@ document.addEventListener('DOMContentLoaded', () => {
   addLaborButton.addEventListener('click', () => {
     const addedLabor = parseFloat(laborInput.value) || 0;
     laborTotal += addedLabor;
-    laborField.value = laborTotal.toFixed(2); // Update labor field in form
-    closeModal();
+    laborField.value = laborTotal.toFixed(1);
+    laborInput.value = '';
+  });
+
+   // Listen for Enter keypress in the modal
+   laborModal.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const addedLabor = parseFloat(laborInput.value) || 0;
+      laborTotal += addedLabor;
+      laborField.value = laborTotal.toFixed(1);
+      laborInput.value = '';
+    }
   });
 
   const form = document.getElementById('roForm');

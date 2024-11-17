@@ -123,7 +123,6 @@ test('opens and closes the modal', () => {
     expect(laborModal.classList.contains('hidden')).toBe(true);
 });
 
-// Test for adding labor using the modal
 test('adds labor from the modal to the labor input field', () => {
   const addLaborLink = document.querySelector('.add-labor');
   const laborInput = document.getElementById('laborInput');
@@ -131,12 +130,19 @@ test('adds labor from the modal to the labor input field', () => {
   const laborField = document.getElementById('labor');
   const laborModal = document.getElementById('laborModal');
 
+  // Set initial value in labor field
   laborField.value = '2.0';
 
+  // Simulate opening the modal and adding labor
   addLaborLink.click();
   laborInput.value = '3.0';
   addLaborButton.click();
 
-  expect(parseFloat(laborField.value)).toBe(5.0);
-  expect(laborModal.classList.contains('hidden')).toBe(true);
+  // Verify the labor field value
+  expect(parseFloat(laborField.value)).toBe(5.0); 
+
+  // Check that the modal remains open
+  expect(laborModal.classList.contains('hidden')).toBe(false); 
 });
+
+
